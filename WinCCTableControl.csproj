@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>WinCCTableControl</AssemblyName>
+    <RootNamespace>WinCCTableControl</RootNamespace>
+  </PropertyGroup>
+</Project>
