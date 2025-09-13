@@ -1,13 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyName>WinCCTableControlCS_Aligned</AssemblyName>
-    <RootNamespace>WinCCTableControlCS_Aligned</RootNamespace>
-    <RegisterForComInterop>true</RegisterForComInterop>
-    <PlatformTarget>x86</PlatformTarget>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ComVisible>true</ComVisible>
+    <AssemblyName>WinCCTableControl</AssemblyName>
+    <RootNamespace>WinCCTableControl</RootNamespace>
   </PropertyGroup>
 </Project>
