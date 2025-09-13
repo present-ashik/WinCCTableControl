@@ -1,157 +1,58 @@
 using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
-namespace WinCCTableControl
+namespace WinCCTableControlCS_Aligned
 {
     [ComVisible(true)]
-    [ClassInterface(ClassInterfaceType.AutoDual)]
-    [DefaultEvent("CellValueChanged")]
-    public class CustomTableControl : UserControl
+    [Guid("12345678-ABCD-1234-ABCD-1234567890AB")]
+    [ProgId("WinCCTableControlCS_Aligned.TableControl")]
+    public class TableControl : UserControl
     {
-        private DataGridView grid;
-        private Dictionary<int, DataGridViewContentAlignment> columnAlignments = new Dictionary<int, DataGridViewContentAlignment>();
+        private DataGridView dataGridView;
 
-        public event EventHandler<CellValueChangedEventArgs> CellValueChanged;
-
-        public CustomTableControl()
+        public TableControl()
         {
-            InitializeComponent();
-        }
+            dataGridView = new DataGridView();
+            dataGridView.Dock = DockStyle.Fill;
+            dataGridView.ColumnCount = 5;
+            dataGridView.RowCount = 10;
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.AllowUserToDeleteRows = false;
+            dataGridView.ReadOnly = true;
 
-        private void InitializeComponent()
-        {
-            grid = new DataGridView();
-            grid.Dock = DockStyle.Fill;
-            grid.AllowUserToAddRows = false;
-            grid.RowHeadersVisible = false;
-            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            grid.CellValueChanged += Grid_CellValueChanged;
-            grid.CellDoubleClick += Grid_CellDoubleClick;
-            grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.Controls.Add(grid);
-        }
-
-        private void Grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-                grid.BeginEdit(true);
-        }
-
-        private void Grid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-            var val = grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-            CellValueChanged?.Invoke(this, new CellValueChangedEventArgs(e.RowIndex, e.ColumnIndex, val));
-        }
-
-        [Category("Data")]
-        [Description("Number of columns in the table.")]
-        [ComVisible(true)]
-        public int ColumnCount
-        {
-            get => grid.ColumnCount;
-            set
+            for (int i = 0; i < 5; i++)
             {
-                grid.ColumnCount = value;
-                for (int i = 0; i < value; i++)
-                    grid.Columns[i].Name = "Col " + (i + 1);
+                dataGridView.Columns[i].Name = "Column " + (i + 1);
+                dataGridView.Columns[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dataGridView.Columns[i].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                dataGridView.Rows[i].HeaderCell.Value = "Row " + (i + 1);
+                dataGridView.Rows[i].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            this.Controls.Add(dataGridView);
+        }
+
+        public void SetCellValue(int row, int col, string value)
+        {
+            if (row >= 0 && row < dataGridView.RowCount && col >= 0 && col < dataGridView.ColumnCount)
+            {
+                dataGridView.Rows[row].Cells[col].Value = value;
             }
         }
 
-        [Category("Data")]
-        [Description("Number of rows in the table.")]
-        [ComVisible(true)]
-        public int RowCount
+        public string GetCellValue(int row, int col)
         {
-            get => grid.RowCount;
-            set => grid.RowCount = value;
-        }
-
-        [ComVisible(true)]
-        public void SetCell(int row, int col, object value)
-        {
-            if (row < 0 || row >= grid.RowCount) return;
-            if (col < 0 || col >= grid.ColumnCount) return;
-            grid.Rows[row].Cells[col].Value = value;
-        }
-
-        [ComVisible(true)]
-        public object GetCell(int row, int col)
-        {
-            if (row < 0 || row >= grid.RowCount) return null;
-            if (col < 0 || col >= grid.ColumnCount) return null;
-            return grid.Rows[row].Cells[col].Value;
-        }
-
-        [ComVisible(true)]
-        public void SetColumnHeader(int col, string header)
-        {
-            if (col < 0 || col >= grid.ColumnCount) return;
-            grid.Columns[col].HeaderText = header;
-        }
-
-        [ComVisible(true)]
-        public void ClearAll()
-        {
-            foreach (DataGridViewRow r in grid.Rows)
-                foreach (DataGridViewCell c in r.Cells)
-                    c.Value = null;
-        }
-
-        [ComVisible(true)]
-        public void SetColumnAlignment(int colIndex, DataGridViewContentAlignment alignment)
-        {
-            if (colIndex < 0 || colIndex >= grid.ColumnCount) return;
-            grid.Columns[colIndex].DefaultCellStyle.Alignment = alignment;
-            columnAlignments[colIndex] = alignment;
-        }
-
-        [ComVisible(true)]
-        public DataGridViewContentAlignment GetColumnAlignment(int colIndex)
-        {
-            if (colIndex < 0 || colIndex >= grid.ColumnCount) return grid.DefaultCellStyle.Alignment;
-            return columnAlignments.ContainsKey(colIndex) ? columnAlignments[colIndex] : grid.Columns[colIndex].DefaultCellStyle.Alignment;
-        }
-
-        [Category("Appearance")]
-        [Description("Comma-separated text alignment for each column. Example: MiddleCenter,MiddleLeft,MiddleRight")]
-        [ComVisible(true)]
-        public string ColumnTextAlignments
-        {
-            get => string.Join(",", grid.Columns.Cast<DataGridViewColumn>().Select(c => c.DefaultCellStyle.Alignment.ToString()));
-            set
+            if (row >= 0 && row < dataGridView.RowCount && col >= 0 && col < dataGridView.ColumnCount)
             {
-                if (string.IsNullOrWhiteSpace(value)) return;
-                var alignments = value.Split(',');
-                for (int i = 0; i < Math.Min(alignments.Length, grid.ColumnCount); i++)
-                {
-                    if (Enum.TryParse(alignments[i].Trim(), out DataGridViewContentAlignment align))
-                    {
-                        grid.Columns[i].DefaultCellStyle.Alignment = align;
-                    }
-                }
+                object val = dataGridView.Rows[row].Cells[col].Value;
+                return val != null ? val.ToString() : "";
             }
-        }
-    }
-
-    [ComVisible(true)]
-    public class CellValueChangedEventArgs : EventArgs
-    {
-        public int Row { get; }
-        public int Column { get; }
-        public object Value { get; }
-
-        public CellValueChangedEventArgs(int row, int col, object value)
-        {
-            Row = row;
-            Column = col;
-            Value = value;
+            return "";
         }
     }
 }
