@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WinCCTableControl
 {
@@ -10,6 +11,7 @@ namespace WinCCTableControl
     public class CustomTableControl : UserControl
     {
         private DataGridView grid;
+        private Dictionary<int, DataGridViewContentAlignment> columnAlignments = new Dictionary<int, DataGridViewContentAlignment>();
 
         public event EventHandler<CellValueChangedEventArgs> CellValueChanged;
 
@@ -27,6 +29,8 @@ namespace WinCCTableControl
             grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             grid.CellValueChanged += Grid_CellValueChanged;
             grid.CellDoubleClick += Grid_CellDoubleClick;
+            grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             this.Controls.Add(grid);
         }
 
@@ -94,20 +98,41 @@ namespace WinCCTableControl
                     c.Value = null;
         }
 
-        public string ExportCsv(char sep = ',')
+        [Category("Appearance")]
+        [Description("Set text alignment for a specific column (by index).")]
+        public void SetColumnAlignment(int colIndex, DataGridViewContentAlignment alignment)
         {
-            var lines = new List<string>();
-            var headers = new List<string>();
-            foreach (DataGridViewColumn c in grid.Columns) headers.Add(c.HeaderText);
-            lines.Add(string.Join(sep.ToString(), headers));
-            foreach (DataGridViewRow r in grid.Rows)
+            if (colIndex < 0 || colIndex >= grid.ColumnCount) return;
+            grid.Columns[colIndex].DefaultCellStyle.Alignment = alignment;
+            columnAlignments[colIndex] = alignment;
+        }
+
+        public DataGridViewContentAlignment GetColumnAlignment(int colIndex)
+        {
+            if (colIndex < 0 || colIndex >= grid.ColumnCount) return grid.DefaultCellStyle.Alignment;
+            return columnAlignments.ContainsKey(colIndex) ? columnAlignments[colIndex] : grid.Columns[colIndex].DefaultCellStyle.Alignment;
+        }
+
+        [Category("Appearance")]
+        [Description("Comma-separated text alignment for each column. Example: MiddleCenter,MiddleLeft,MiddleRight")]
+        public string ColumnTextAlignments
+        {
+            get
             {
-                var cells = new List<string>();
-                foreach (DataGridViewCell c in r.Cells)
-                    cells.Add(c.Value?.ToString() ?? "");
-                lines.Add(string.Join(sep.ToString(), cells));
+                return string.Join(",", grid.Columns.Cast<DataGridViewColumn>().Select(c => c.DefaultCellStyle.Alignment.ToString()));
             }
-            return string.Join(Environment.NewLine, lines);
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value)) return;
+                var alignments = value.Split(',');
+                for (int i = 0; i < Math.Min(alignments.Length, grid.ColumnCount); i++)
+                {
+                    if (Enum.TryParse(alignments[i].Trim(), out DataGridViewContentAlignment align))
+                    {
+                        grid.Columns[i].DefaultCellStyle.Alignment = align;
+                    }
+                }
+            }
         }
     }
 
