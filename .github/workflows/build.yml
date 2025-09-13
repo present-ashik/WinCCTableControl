@@ -23,5 +23,5 @@ jobs:
       - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
-          name: WinCCTableControl_V3
-          path: bin/Release/**/WinCCTableControl_V3.dll
+          name: WinCCTableControl
+          path: bin/Release/**/WinCCTableControl.dll
