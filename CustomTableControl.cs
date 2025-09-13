@@ -4,9 +4,12 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace WinCCTableControl
 {
+    [ComVisible(true)]
+    [ClassInterface(ClassInterfaceType.AutoDual)]
     [DefaultEvent("CellValueChanged")]
     public class CustomTableControl : UserControl
     {
@@ -49,6 +52,7 @@ namespace WinCCTableControl
 
         [Category("Data")]
         [Description("Number of columns in the table.")]
+        [ComVisible(true)]
         public int ColumnCount
         {
             get => grid.ColumnCount;
@@ -62,15 +66,14 @@ namespace WinCCTableControl
 
         [Category("Data")]
         [Description("Number of rows in the table.")]
+        [ComVisible(true)]
         public int RowCount
         {
             get => grid.RowCount;
-            set
-            {
-                grid.RowCount = value;
-            }
+            set => grid.RowCount = value;
         }
 
+        [ComVisible(true)]
         public void SetCell(int row, int col, object value)
         {
             if (row < 0 || row >= grid.RowCount) return;
@@ -78,6 +81,7 @@ namespace WinCCTableControl
             grid.Rows[row].Cells[col].Value = value;
         }
 
+        [ComVisible(true)]
         public object GetCell(int row, int col)
         {
             if (row < 0 || row >= grid.RowCount) return null;
@@ -85,12 +89,14 @@ namespace WinCCTableControl
             return grid.Rows[row].Cells[col].Value;
         }
 
+        [ComVisible(true)]
         public void SetColumnHeader(int col, string header)
         {
             if (col < 0 || col >= grid.ColumnCount) return;
             grid.Columns[col].HeaderText = header;
         }
 
+        [ComVisible(true)]
         public void ClearAll()
         {
             foreach (DataGridViewRow r in grid.Rows)
@@ -98,8 +104,7 @@ namespace WinCCTableControl
                     c.Value = null;
         }
 
-        [Category("Appearance")]
-        [Description("Set text alignment for a specific column (by index).")]
+        [ComVisible(true)]
         public void SetColumnAlignment(int colIndex, DataGridViewContentAlignment alignment)
         {
             if (colIndex < 0 || colIndex >= grid.ColumnCount) return;
@@ -107,6 +112,7 @@ namespace WinCCTableControl
             columnAlignments[colIndex] = alignment;
         }
 
+        [ComVisible(true)]
         public DataGridViewContentAlignment GetColumnAlignment(int colIndex)
         {
             if (colIndex < 0 || colIndex >= grid.ColumnCount) return grid.DefaultCellStyle.Alignment;
@@ -115,12 +121,10 @@ namespace WinCCTableControl
 
         [Category("Appearance")]
         [Description("Comma-separated text alignment for each column. Example: MiddleCenter,MiddleLeft,MiddleRight")]
+        [ComVisible(true)]
         public string ColumnTextAlignments
         {
-            get
-            {
-                return string.Join(",", grid.Columns.Cast<DataGridViewColumn>().Select(c => c.DefaultCellStyle.Alignment.ToString()));
-            }
+            get => string.Join(",", grid.Columns.Cast<DataGridViewColumn>().Select(c => c.DefaultCellStyle.Alignment.ToString()));
             set
             {
                 if (string.IsNullOrWhiteSpace(value)) return;
@@ -136,6 +140,7 @@ namespace WinCCTableControl
         }
     }
 
+    [ComVisible(true)]
     public class CellValueChangedEventArgs : EventArgs
     {
         public int Row { get; }
