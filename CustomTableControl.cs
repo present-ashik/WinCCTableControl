@@ -68,77 +68,14 @@ namespace WinCCTableControlCS_StringAlignment
             set => grid.RowCount = value;
         }
 
-        private int[] columnWidths = new int[5]; // Adjust size as needed
+        
+        [ComVisible(true)]
+        public void SetColumnWidth(int colIndex, int width)
+        {
+            if (colIndex < 0 || colIndex >= grid.ColumnCount) return;
+            grid.Columns[colIndex].Width = width;
+        }
 
-        [ComVisible(true)]
-        [Category("Layout")]
-        [Description("Width of Column 0")]
-        public int Column0Width
-        {
-            get => columnWidths[0];
-            set
-            {
-                columnWidths[0] = value;
-                if (grid.ColumnCount > 0)
-                    grid.Columns[0].Width = value;
-            }
-        }
-        
-        [ComVisible(true)]
-        [Category("Layout")]
-        [Description("Width of Column 1")]
-        public int Column1Width
-        {
-            get => columnWidths[1];
-            set
-            {
-                columnWidths[1] = value;
-                if (grid.ColumnCount > 1)
-                    grid.Columns[1].Width = value;
-            }
-        }
-        
-        [ComVisible(true)]
-        [Category("Layout")]
-        [Description("Width of Column 2")]
-        public int Column2Width
-        {
-            get => columnWidths[2];
-            set
-            {
-                columnWidths[2] = value;
-                if (grid.ColumnCount > 2)
-                    grid.Columns[2].Width = value;
-            }
-        }
-        
-        [ComVisible(true)]
-        [Category("Layout")]
-        [Description("Width of Column 3")]
-        public int Column3Width
-        {
-            get => columnWidths[3];
-            set
-            {
-                columnWidths[3] = value;
-                if (grid.ColumnCount > 3)
-                    grid.Columns[3].Width = value;
-            }
-        }
-        
-        [ComVisible(true)]
-        [Category("Layout")]
-        [Description("Width of Column 4")]
-        public int Column4Width
-        {
-            get => columnWidths[4];
-            set
-            {
-                columnWidths[4] = value;
-                if (grid.ColumnCount > 4)
-                    grid.Columns[4].Width = value;
-            }
-        }
         
 
         [ComVisible(true)]
